@@ -60,12 +60,7 @@ class controller {
         //include correct view
         $trace = debug_backtrace();
         $this->view = ($view) ? $view : $trace[1]['function'];
-        ob_start(); // Start output buffering
         include_once("{$CFG->dirroot}/mod/{$this->mod_name}/views/{$this->model_name}/{$this->view}.html");
-        $content = ob_get_contents(); // Store buffer in variable
-        ob_end_clean(); // End buffering and clean up
-
-        return $content;
     } // function get_view
 
 

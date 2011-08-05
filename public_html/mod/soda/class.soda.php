@@ -49,7 +49,7 @@ class soda {
         $content = ob_get_contents(); // Store buffer in variable
         ob_end_clean(); // End buffering and clean up
 
-        if ($this->redirect) {
+        if ($this->no_layout_required() ) {
             echo $content;
             return;
         }
@@ -59,6 +59,13 @@ class soda {
         echo $content;
         $this->print_footer(get_called_class());
     } // function add_layout_and_dispatch
+
+
+    function no_layout_required() {
+        if ($this->redirect) return true;
+        if (optional_param('no_layout', false, PARAM_RAW)) return true;
+        return false;
+    } // function no_layout_required
 
 
     function get_header($mod_name) {
