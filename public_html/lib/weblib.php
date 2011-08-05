@@ -6226,7 +6226,6 @@ function redirect($url, $message='', $delay=-1) {
 
 /// when no message and header printed yet, try to redirect
     if (empty($message) and !defined('HEADER_PRINTED')) {
-
         // Technically, HTTP/1.1 requires Location: header to contain
         // the absolute path. (In practice browsers accept relative
         // paths - but still, might as well do it properly.)
@@ -6260,6 +6259,7 @@ function redirect($url, $message='', $delay=-1) {
         echo '<script type="text/javascript">'. "\n" .'//<![CDATA['. "\n". "location.replace('".addslashes_js($url)."');". "\n". '//]]>'. "\n". '</script>';   // To cope with Mozilla bug
         die;
     }
+
 
     if ($delay == -1) {
         $delay = 3;  // if no delay specified wait 3 seconds

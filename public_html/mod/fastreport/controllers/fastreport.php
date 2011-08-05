@@ -9,7 +9,7 @@ class fastreport_controller extends controller {
 
 
     function index() {
-        echo "This is fastreport_controller reporting!";        
+        $this->redirect_to('index', array('controller' => 'log') );
     } // function index
 
 } // class fastreport_controller 

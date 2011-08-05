@@ -5,6 +5,7 @@ class controller {
     var $mod_name;
     var $model_name;
     var $view;
+    var $redirect = false;
 
     function __construct($mod_name, $mod_instance_id) {
         $this->mod_name = $mod_name;
@@ -35,6 +36,8 @@ class controller {
     function redirect_to($action, $parameters = false) {
         if ($parameters) $parameters = $this->remove_collections_from_parameters($parameters);
         $query_string = ($parameters) ? http_build_query($parameters) . '&' : '';
+        $this->redirect = true;
+        //$this->redirect( $this->get_url("{$query_string}action=$action" , '') );
         redirect( $this->get_url("{$query_string}action=$action" , '') );
     } // function redirect_to
 
@@ -111,6 +114,83 @@ class controller {
     function base_url() {
         return $this->base_url;        
     } // function base_url
+
+
+    function redirect($url, $message='', $delay=0) {
+
+        global $CFG;
+
+        if (!empty($CFG->usesid) && !isset($_COOKIE[session_name()])) {
+           $url = sid_process_url($url);
+        }
+
+        $encodedurl = $this->get_encodedurl($url);
+        $url = $this->get_absolute_url(str_replace('&amp;', '&', $encodedurl));
+
+        $this->stop_redirect_for_errors_on_debug_level($url, clean_text($message));
+        $this->log_performance();
+
+        //try header redirection first
+        @header($_SERVER['SERVER_PROTOCOL'] . ' 303 See Other'); //302 might not work for POST requests, 303 is ignored by obsolete clients
+        @header('Location: '.$url);
+        //another way for older browsers and already sent headers (eg trailing whitespace in config.php)
+        echo '<meta http-equiv="refresh" content="'. $delay .'; url='. $encodedurl .'" />';
+        echo '<script type="text/javascript">'. "\n" .'//<![CDATA['. "\n". "location.replace('".addslashes_js($url)."');". "\n". '//]]>'. "\n". '</script>';   // To cope with Mozilla bug
+    } // function redirect
+
+
+    function get_encodedurl($url) {
+        $encodedurl = preg_replace("/\&(?![a-zA-Z0-9#]{1,8};)/", "&amp;", $url);
+        return preg_replace('/^.*href="([^"]*)".*$/', "\\1", clean_text('<a href="'.$encodedurl.'" />'));
+    } // function get_encodedurl
+
+
+    function stop_redirect_for_errors_on_debug_level($url, $message) {
+        /// At developer debug level. Don't redirect if errors have been printed on screen.
+        /// Currenly only works in PHP 5.2+; we do not want strict PHP5 errors
+        $lasterror = error_get_last();
+        $error = defined('DEBUGGING_PRINTED') or (!empty($lasterror) && ($lasterror['type'] & DEBUG_DEVELOPER));
+        $errorprinted = debugging('', DEBUG_ALL) && $CFG->debugdisplay && $error;
+        if ($errorprinted) {
+            exit("<strong>Error output, so disabling automatic redirect to <a href='$url'>$url</a>.</strong></p><p>$message</p>");
+        }               
+    } // function stop_redirect_for_errors_on_debug_level
+
+
+    function log_performance() {
+         if (defined('MDL_PERF') || (!empty($CFG->perfdebug) and $CFG->perfdebug > 7)) {
+            if (defined('MDL_PERFTOLOG') && !function_exists('register_shutdown_function')) {
+                $perf = get_performance_info();
+                error_log("PERF: " . $perf['txt']);
+            }
+        }               
+    } // function log_performance
+
+
+    function get_absolute_url($url) {
+        global $CFG;
+
+        if (!preg_match('|^[a-z]+:|', $url)) {
+            // Get host name http://www.wherever.com
+            $hostpart = preg_replace('|^(.*?[^:/])/.*$|', '$1', $CFG->wwwroot);
+            if (preg_match('|^/|', $url)) {
+                // URLs beginning with / are relative to web server root so we just add them in
+                $url = $hostpart.$url;
+            } else {
+                // URLs not beginning with / are relative to path of current script, so add that on.
+                $url = $hostpart.preg_replace('|\?.*$|','',me()).'/../'.$url;
+            }
+            // Replace all ..s
+            while (true) {
+                $newurl = preg_replace('|/(?!\.\.)[^/]*/\.\./|', '/', $url);
+                if ($newurl == $url) {
+                    break;
+                }
+                $url = $newurl;
+            }
+        }               
+        return $url;
+    } // function get_absolute_url
 
 } // class controller
 

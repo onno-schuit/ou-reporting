@@ -4,6 +4,8 @@ include_once("{$CFG->dirroot}/mod/soda/class.controller.php");
 
 class soda {
 
+    var $redirect = false;
+
 
     function __construct() {
         $this->create_mod_library_functions( get_called_class() );
@@ -13,15 +15,11 @@ class soda {
     function display() {            
         $mod_name = get_called_class();
         global ${$mod_name}, $CFG, $cm, $course;
-        $redirect_actions = array('update', 'delete', 'create', 'insert', 'save');
         ${$mod_name} = static::get_module_instance();
         static::set_variables($mod_name);
 
         // TODO: call default module->index() to show 'all instances of module'
         $action = optional_param('action', 'index', PARAM_RAW);
-        if ( in_array($action, $redirect_actions) ) {
-            $this->dispatch($action);
-        } 
         $this->add_layout_and_dispatch($action);
     } // function display
 
@@ -39,25 +37,42 @@ class soda {
         $class = $controller . "_controller";
         $instance = new $class($mod_name, ${$mod_name}->id);
         $instance->$action($record_id);               
+        $this->redirect = $instance->redirect;
     } // function dispatch
 
 
     function add_layout_and_dispatch($action) {
         global $CFG;
-        $this->print_header(get_called_class());
-        echo "<script src='{$CFG->wwwroot}/mod/soda/lib.js' type='text/javascript'></script>";
+
+        ob_start(); // Start output buffering
         $this->dispatch($action);
+        $content = ob_get_contents(); // Store buffer in variable
+        ob_end_clean(); // End buffering and clean up
+
+        if ($this->redirect) {
+            echo $content;
+            return;
+        }
+        $header = $this->get_header(get_called_class());
+
+        echo $header;
+        echo $content;
         $this->print_footer(get_called_class());
     } // function add_layout_and_dispatch
 
 
-    function print_header($mod_name) {
-        global $cm, $course;
+    function get_header($mod_name) {
+        global $cm, $course, $CFG;
+        ob_start(); // Start output buffering
         $str_mod_name_singular = get_string('modulename', $mod_name);
         $navigation = build_navigation( get_string('modulename', $mod_name) );
         print_header_simple(format_string($mod_name), "", $navigation, "", "", true,
                             update_module_button($cm->id, $course->id, $str_mod_name_singular), navmenu($course, $cm));               
-    } // function print_header
+        echo "<script src='{$CFG->wwwroot}/mod/soda/lib.js' type='text/javascript'></script>";
+        $header = ob_get_contents(); // Store buffer in variable
+        ob_end_clean(); // End buffering and clean up
+        return $header;
+    } // function get_header
 
 
     function print_footer($mod_name) {
