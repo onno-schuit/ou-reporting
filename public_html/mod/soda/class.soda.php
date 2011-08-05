@@ -29,10 +29,14 @@ class soda {
     function dispatch($action) {
         $mod_name = get_called_class();
         global $CFG, ${$mod_name};
-        $controller = optional_param('controller', 'module', PARAM_RAW);
+        $controller = optional_param('controller', $mod_name, PARAM_RAW);
+        if (!file_exists("{$CFG->dirroot}/mod/$mod_name/controllers/{$controller}.php")) {
+            $instance = new controller($mod_name, ${$mod_name}->id);
+            return $instance->index();
+        }
         $record_id = optional_param("{$controller}_id", false, PARAM_INT);
-        $class = $controller . "_controller";
         include_once("{$CFG->dirroot}/mod/$mod_name/controllers/$controller.php");
+        $class = $controller . "_controller";
         $instance = new $class($mod_name, ${$mod_name}->id);
         $instance->$action($record_id);               
     } // function dispatch

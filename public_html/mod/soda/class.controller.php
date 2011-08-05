@@ -14,6 +14,11 @@ class controller {
         $this->{$instance_id_name} = $mod_instance_id;
     } // function __construct
 
+    
+    function index() {
+        echo "Please overwrite the Soda controller method 'index' with your own method.";
+    } // function index
+
 
     function check_capability($capability_short = 'edit', $user = false) {
         global $context, $USER;
@@ -23,8 +28,7 @@ class controller {
 
 
     function require_login() {
-        global $course, $cm;
-        require_course_login($course, false, $cm);
+        require_login();
     } // function require_login
 
 
