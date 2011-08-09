@@ -332,6 +332,8 @@ function print_log($course, $user=0, $date=0, $order="l.time ASC", $page=0, $per
             if (($ld->mtable == 'user') and ($ld->field == sql_concat('firstname', "' '" , 'lastname'))) {
                 $log->info = fullname(get_record($ld->mtable, 'id', $log->info), true);
             } else {
+                //exit(print_object($ld));
+                //exit(print_object($log));
                 $log->info = get_field($ld->mtable, $ld->field, 'id', $log->info);
             }
         }

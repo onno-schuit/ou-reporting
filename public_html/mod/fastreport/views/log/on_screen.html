@@ -1,0 +1,11 @@
+<table>
+    <?         
+        $this->process_logs( function($row) {
+            echo "<tr>";
+            foreach($row as $field) {
+                echo "<td>$field</td>";
+            }
+            echo "</tr>";
+        });
+    ?>
+</table>
