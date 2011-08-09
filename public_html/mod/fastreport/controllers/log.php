@@ -38,19 +38,14 @@ class log_controller extends fastreport_controller {
         $ldcache = array();
         while ($row = $recordset->FetchRow()) {
             $ld = $this->get_log_display_info($ldcache, $row);
-
-            $row['info'] = $this->set_info_row($ld, $row);
-            //Filter log->info
-            $row['info'] = format_string($row['info']);
-            $row['info'] = strip_tags(urldecode($row['info']));    // Some XSS protection
-
-
+            $row['info'] = strip_tags(urldecode(format_string($this->set_info_row($ld, $row))));
+            //$row['info'] = $this->get_info_field($ld, $row);
             $function($row);
         }               
     } // function process_logs
 
 
-    function set_info_row($ld, $row) {
+    function get_info_field($ld, $row) {
         if ($ld && !empty($row['info'])) {
             // ugly hack to make sure fullname is shown correctly
             if (($ld->mtable == 'user') and ($ld->field ==  sql_concat('firstname', "' '" , 'lastname'))) {
@@ -58,17 +53,32 @@ class log_controller extends fastreport_controller {
             } else {
                 $row['info'] = get_field($ld->mtable, $ld->field, 'id', $row['info']);
             }
-        }               
+        }
 
+        //Filter log->info
+        $row['info'] = format_string($row['info']);
+        $row['info'] = strip_tags(urldecode($row['info']));    // Some XSS protection               
+        return $row['info'];
+    } // function get_info_field
+
+
+    function set_info_row($ld, $row) {
+        if (! ($ld && !empty($row['info']) && ($ld->mtable != '') ) ) return $row['info'];
+
+        if (($ld->mtable == 'user') and ($ld->field ==  sql_concat('firstname', "' '" , 'lastname'))) {
+            return fullname(get_record($ld->mtable, 'id', $row['info']), true);
+        } 
+        return get_field($ld->mtable, $ld->field, 'id', $row['info']);
     } // function set_info_row
 
 
     function get_log_display_info($ldcache, $row) {
+        global $CFG;
         if (isset($ldcache[$row['module']][$row['action']])) return $ldcache[$row['module']][$row['action']];
         $recordset = get_recordset_sql("SELECT * 
                                         FROM {$CFG->prefix}log_display 
-                                        WHERE module = {$row['module']} 
-                                        AND action = {$row['action']} ");
+                                        WHERE module LIKE '{$row['module']}'
+                                        AND action LIKE '{$row['action']}' ");
         return $ldcache[$row['module']][$row['action']] = $recordset->FetchRow();
     } // function get_log_display_info
 
