@@ -1,9 +1,10 @@
-<table>
+<table border='1'>
     <?         
-        $this->process_logs( function($row) {
+        $this->process_logs( function($row, $columns) {
             echo "<tr>";
-            foreach($row as $field) {
-                echo "<td>$field</td>";
+            foreach($columns as $column) {
+                $value = (isset($row[$column])) ?  $row[$column] : '';
+                echo "<td>$value</td>";
             }
             echo "</tr>";
         });

@@ -2,7 +2,7 @@
 <div id="intro" class="generalbox box"><?= get_string('intro', 'fastreport') ?>
     <p>
         <form action='<?= $this->base_url ?>' method='post' name='date_selection'>
-            <?= $this->form_parameters(array('action' => 'on_screen', 'no_layout' => 'true')) ?>
+            <?= $this->form_parameters(array('action' => 'download', 'no_layout' => 'true')) ?>
             <table>
                 <tr>
                     <td>Start date</td> <td><input type='text' name='start_date' value=''/> dd-mm-yyyy hh:mm</td>
