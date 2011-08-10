@@ -5,7 +5,7 @@ include_once("{$CFG->dirroot}/mod/fastreport/controllers/fastreport.php");
 class log_controller extends fastreport_controller {
 
     var $columns = array('shortname', 'time', 'ip', 'fullname', 'mod_action', 'info');
-    var $ldcache = array();
+    var $log_display_cache = array();
     var $fullname_cache = array();
     var $info_cache = array();
 
@@ -17,7 +17,6 @@ class log_controller extends fastreport_controller {
 
 
     function download() {
-        $time_start = time();
         $this->send_headers('logs_' . userdate(time(), get_string('backupnameformat'), 99, false) . '.csv');
         echo '"' . implode('"' . log_controller::$separation . '"', $this->columns) . "\"\n";
         $this->process_logs( function($row, $columns) {
@@ -28,8 +27,6 @@ class log_controller extends fastreport_controller {
                 echo ($counter == count($columns)) ? "\"$value\"\n" : "\"$value\"" . log_controller::$separation;
             }
         });
-        $time_end = time();
-        echo "total time in secs: " . ($time_end - $time_start);
     } // function download
 
 
@@ -43,7 +40,6 @@ class log_controller extends fastreport_controller {
 
 
     function on_screen() {
-        $no_cache = 0;
         $recordset = $this->get_logs();
         $this->get_view(array('recordset' => $recordset, 'columns' => $this->columns));
     } // function on_screen
@@ -52,31 +48,30 @@ class log_controller extends fastreport_controller {
     function process_logs($function) {
         $recordset = $this->get_logs();
         while ($row = $recordset->FetchRow()) {
-            $ld = $this->get_log_display_info($row);
-            //$row['info'] = strip_tags(urldecode(format_string($this->set_info_row($ld, $row))));
-            $row['info'] = strip_tags(urldecode($this->set_info_row($ld, $row)));
+            $log_display_info = $this->get_log_display_info($row);
+            //$row['info'] = strip_tags(urldecode(format_string($this->set_info_row($log_display_info, $row))));
+            $row['info'] = strip_tags(urldecode($this->set_info_row($log_display_info, $row)));
             $function($row, $this->columns);
         }               
     } // function process_logs
 
 
-    function set_info_row($ld, $row) {
-        if (! ($ld && !empty($row['info'])) ) return $row['info'];
-        // ugly hack to make sure fullname is shown correctly
-        if (($ld->mtable == 'user') and ($ld->field ==  sql_concat('firstname', "' '" , 'lastname'))) {
+    function set_info_row($log_display_info, $row) {
+        if (! ($log_display_info && !empty($row['info'])) ) return $row['info'];
+        if (($log_display_info->mtable == 'user') and ($log_display_info->field ==  sql_concat('firstname', "' '" , 'lastname'))) {
             if (isset($this->fullname_cache[ $row['info'] ])) return $this->fullname_cache[ $row['info'] ];
-            return $this->fullname_cache[ $row['info'] ] = fullname(get_record($ld->mtable, 'id', $row['info']), true);
+            return $this->fullname_cache[ $row['info'] ] = fullname(get_record($log_display_info->mtable, 'id', $row['info']), true);
         } 
-        $key = $ld->mtable . $ld->field . $row['info'];
+        $key = $log_display_info->mtable . $log_display_info->field . $row['info'];
         if (isset($this->info_cache[$key])) return $this->info_cache[$key];
-        return $this->info_cache[$key] = get_field($ld->mtable, $ld->field, 'id', $row['info']);
+        return $this->info_cache[$key] = get_field($log_display_info->mtable, $log_display_info->field, 'id', $row['info']);
     } // function set_info_row
 
 
     function get_log_display_info($row) {
         $key = $row['module'] . $row['action'];
-        if (isset($this->ldcache[ $key ])) return $this->ldcache[ $key ];
-        return $this->ldcache[ $key ] = get_record('log_display', 'module', $row['module'], 'action', $row['action']);
+        if (isset($this->log_display_cache[ $key ])) return $this->log_display_cache[ $key ];
+        return $this->log_display_cache[ $key ] = get_record('log_display', 'module', $row['module'], 'action', $row['action']);
     } // function get_log_display_info
 
 
