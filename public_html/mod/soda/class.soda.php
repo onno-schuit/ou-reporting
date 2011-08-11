@@ -1,6 +1,8 @@
 <?php
 
 include_once("{$CFG->dirroot}/mod/soda/class.controller.php");
+include_once("{$CFG->dirroot}/mod/soda/class.soda_error.php");
+include_once("{$CFG->dirroot}/mod/soda/class.model.php");
 
 class soda {
 
@@ -34,6 +36,9 @@ class soda {
         }
         $record_id = optional_param("{$controller}_id", false, PARAM_INT);
         include_once("{$CFG->dirroot}/mod/$mod_name/controllers/$controller.php");
+        if (file_exists("{$CFG->dirroot}/mod/$mod_name/models/{$controller}.php")) {
+            include_once("{$CFG->dirroot}/mod/$mod_name/models/{$controller}.php");
+        }
         $class = $controller . "_controller";
         $instance = new $class($mod_name, ${$mod_name}->id);
         $instance->$action($record_id);               
