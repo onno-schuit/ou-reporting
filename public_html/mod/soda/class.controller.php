@@ -5,6 +5,7 @@ class controller {
     var $mod_name;
     var $model_name;
     var $view;
+    var $helpers = array();
     var $redirect = false;
 
     function __construct($mod_name, $mod_instance_id) {
@@ -14,6 +15,27 @@ class controller {
         $instance_id_name = "{$this->mod_name}_id";
         $this->{$instance_id_name} = $mod_instance_id;
     } // function __construct
+
+
+    function set_helpers($helpers) {
+        foreach($helpers as $helper) {
+            if (!$helper) continue;
+            $helper->controller = $this;
+            $this->helpers[] = $helper;
+        }
+    } // function set_helpers
+
+
+    function __call($method, $args) {
+        foreach($this->helpers as $helper) {
+            if (!method_exists($helper, $method)) continue;
+            return call_user_func_array(
+                array($helper, $method),
+                $args
+            );
+        }
+        throw new Exception("Unknown method [$method]");
+    } // function __call
 
     
     function index() {

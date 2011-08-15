@@ -3,6 +3,7 @@
 include_once("{$CFG->dirroot}/mod/soda/class.controller.php");
 include_once("{$CFG->dirroot}/mod/soda/class.soda_error.php");
 include_once("{$CFG->dirroot}/mod/soda/class.model.php");
+include_once("{$CFG->dirroot}/mod/soda/class.helper.php");
 
 class soda {
 
@@ -29,9 +30,15 @@ class soda {
     function dispatch($action) {
         $mod_name = get_called_class();
         global $CFG, ${$mod_name};
+
         $controller = optional_param('controller', $mod_name, PARAM_RAW);
+
+        $general_helper = $this->get_helper($mod_name);
+        $specific_helper  = $this->get_helper($mod_name, $controller);
+
         if (!file_exists("{$CFG->dirroot}/mod/$mod_name/controllers/{$controller}.php")) {
             $instance = new controller($mod_name, ${$mod_name}->id);
+            $instance->set_helpers(array($general_helper, $specific_helper));
             return $instance->index();
         }
         $record_id = optional_param("{$controller}_id", false, PARAM_INT);
@@ -41,9 +48,24 @@ class soda {
         }
         $class = $controller . "_controller";
         $instance = new $class($mod_name, ${$mod_name}->id);
+        $instance->set_helpers(array($general_helper, $specific_helper));
         $instance->$action($record_id);               
         $this->redirect = $instance->redirect;
     } // function dispatch
+
+
+    function get_helper($mod_name, $controller = false) {
+        global $CFG;
+        $helper = false;
+        $path = ($controller) ? "{$controller}/" : "";
+        $helper_class_name = ($controller) ? "{$controller}_helper" : "{$mod_name}_helper"  ;
+        if (file_exists("{$CFG->dirroot}/mod/$mod_name/helpers/{$path}class.{$helper_class_name}.php")) {
+            include_once("{$CFG->dirroot}/mod/$mod_name/helpers/{$path}class.{$helper_class_name}.php");
+            //if (!$controller) exit("{$CFG->dirroot}/mod/$mod_name/helpers/{$path}class.{$helper_class_name}.php");
+            $helper = new $helper_class_name();
+        }               
+        return $helper;
+    } // function get_general_helper
 
 
     function add_layout_and_dispatch($action) {
@@ -103,7 +125,7 @@ class soda {
         foreach($reflection->getMethods(ReflectionMethod::IS_STATIC) as $method) {
             $this->create_wrapper_function($method, $mod_name);
         }
-        // special case
+        // special case deviating from naming convention
         if (! function_exists($mod_name . '_get_' . $mod_name) ) {
             eval('function ' . $mod_name . '_get_' . $mod_name . '($mod_id) { return ' . $mod_name . '::get_mod_by_id($mod_id); }');
         }
