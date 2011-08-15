@@ -3,16 +3,24 @@
 class helper {
 
 
-    function __call($method, $args) {
-        if (!method_exists($this->controller, $method)) {
-            throw new Exception("Unknown method [$method]");
-        }
+    function __call($method, $args) {    
 
-        return call_user_func_array(
-            array($this->controller, $method),
-            $args
-        );
-    }
+        if (method_exists($this->controller, $method)) {
+            return call_user_func_array(
+                array($this->controller, $method),
+                $args
+            );
+        }
+        foreach($this->controller->helpers as $helper) {
+            if (!method_exists($helper, $method)) continue;
+            return call_user_func_array(
+                array($helper, $method),
+                $args
+            );
+
+        }
+        throw new Exception("Unknown method [$method]");
+    } // function __call
 
 
     function __get($property) {
