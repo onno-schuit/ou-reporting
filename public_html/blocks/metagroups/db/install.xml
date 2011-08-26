@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="blocks/metagroups/db" VERSION="20110826" COMMENT="XMLDB file for Moodle block/metagroups"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE COMMENT="" NAME="metagroups" NEXT="metagroups_groupings">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="course_id"/>
+        <FIELD NAME="course_id" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="block_instance_id"/>
+        <FIELD NAME="block_instance_id" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="course_id"/>
+      </FIELDS>
+
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="metagroups_groupings" COMMENT="metagroups_groupings table retrofitted from MySQL" PREVIOUS="metagroups" NEXT="metagroups_groups">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="metagroups_block_id"/>
+        <FIELD NAME="metagroups_block_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="grouping_id"/>
+        <FIELD NAME="grouping_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="metagroups_block_id" NEXT="parent_grouping_id"/>
+
+        <FIELD NAME="parent_grouping_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="grouping_id" NEXT="master_course_id"/>
+        <FIELD NAME="master_course_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="parent_grouping_id" NEXT="metacourse_id"/>
+        <FIELD NAME="metacourse_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="master_course_id" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="metacourse_id" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+
+      <INDEXES>
+        <INDEX NAME="metagroups_block_id" UNIQUE="false" FIELDS="metagroups_block_id, grouping_id, parent_grouping_id, master_course_id" NEXT="metacourse_id"/>
+        <INDEX NAME="metacourse_id" UNIQUE="false" FIELDS="metacourse_id" PREVIOUS="metagroups_block_id"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="metagroups_groups" COMMENT="metagroups_groups table retrofitted from MySQL" PREVIOUS="metagroups_groupings">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" NEXT="metagroups_block_id"/>
+        <FIELD NAME="metagroups_block_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="id" NEXT="group_id"/>
+
+        <FIELD NAME="group_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="metagroups_block_id" NEXT="parent_group_id"/>
+        <FIELD NAME="parent_group_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="group_id" NEXT="master_course_id"/>
+        <FIELD NAME="master_course_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="parent_group_id" NEXT="metacourse_id"/>
+        <FIELD NAME="metacourse_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="master_course_id" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="metacourse_id" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" ENUM="false" PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="metagroups_block_id" UNIQUE="false" FIELDS="metagroups_block_id, group_id, parent_group_id, master_course_id" NEXT="metacourse_id"/>
+        <INDEX NAME="metacourse_id" UNIQUE="false" FIELDS="metacourse_id" PREVIOUS="metagroups_block_id"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
