@@ -21,8 +21,20 @@ class metacourse extends master_course {
 
     function synchronize() {
         $this->sync_with_master_groups();
+        $this->remove_deleted_master_groups_from_metacourse();
         //$this->sync_groupings();
     } // function synchronize
+
+
+    function remove_deleted_master_groups_from_metacourse() {
+        execute_sql("DELETE FROM {$CFG->prefix}groups_members WHERE groupid IN (
+                         SELECT group_id
+                         FROM {$CFG->prefix}metagroups_groups 
+                         WHERE master_course_id = {$this->master_course->id} 
+                         AND parent_group_id NOT IN (SELECT id {$CFG->prefix}groups)
+                     )", false);
+        // idem for groups
+    } // function remove_deleted_master_groups_from_metacourse 
 
 
 
@@ -35,7 +47,9 @@ class metacourse extends master_course {
 
 
     function sync_master_group($master_group) {
-        if (! $metagroup = $this->find_metagroup_for($master_group['id']) ) {
+        if ($metagroup = $this->find_metagroup_for($master_group['id']) ) {
+            $this->update_metagroup($metagroup);
+        } else {
             $metagroup = $this->copy_master_group($master_group);
         }
         //$this->sync_group_members($master_group, $metagroup);
@@ -57,7 +71,6 @@ class metacourse extends master_course {
         $new_group->courseid = $this->id;
         if (! $id = insert_record('groups', $new_group)) return false;
         $new_group->id = $id;
-
 
         $this->register_new_group_with_block($new_group, (object) $master_group);
 
