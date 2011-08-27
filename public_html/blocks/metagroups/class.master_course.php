@@ -9,11 +9,13 @@ class master_course {
     var $groupings = array();
     var $associated_metacourse_ids = array();
     var $id;
+    var $block_instance_id;
 
-    function __construct($id) {
+    function __construct($id, $block_instance_id) {
         global $CFG;
 
         $this->id = $id;
+        $this->block_instance_id = $block_instance_id;
         $this->load_all(array(
             'groupings' => "SELECT * FROM {$CFG->prefix}groupings WHERE courseid = $this->id",
             'associated_metacourse_ids' => "SELECT parent_course AS id 

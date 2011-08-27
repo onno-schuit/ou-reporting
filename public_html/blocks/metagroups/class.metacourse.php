@@ -52,17 +52,30 @@ class metacourse extends master_course {
 
 
     function copy_master_group($master_group) {
-        $obj = (object) $master_group;
-        unset($obj->id);
-        $obj->courseid = $this->id;
-        if (! $id = insert_record('groups', $obj)) return false;
-        $obj->id = $id;
+        $new_group = (object) $master_group;
+        unset($new_group->id);
+        $new_group->courseid = $this->id;
+        if (! $id = insert_record('groups', $new_group)) return false;
+        $new_group->id = $id;
 
 
-        // register_new_group_with_block
+        $this->register_new_group_with_block($new_group, (object) $master_group);
 
-        return (array) $obj;
+        return (array) $new_group;
     } // function copy_master_group
+
+
+    function register_new_group_with_block($new_group, $master_group) {
+        $metagroups_group = new object();
+        $metagroups_group->metagroups_block_id = $this->master_course->block_instance_id;
+        $metagroups_group->group_id = $new_group->id;
+        $metagroups_group->parent_group_id = $master_group->id;
+        $metagroups_group->master_course_id = $this->master_course->id;
+        $metagroups_group->metacourse_id = $this->id;
+        $metagroups_group->timecreate = $metagroups_group->timecreate = time();
+
+        return insert_record('metagroups_groups', $metagroups_group);
+    } // function register_new_group_with_block
 
 
     function sync_group_members($master_group, $metagroup) {
