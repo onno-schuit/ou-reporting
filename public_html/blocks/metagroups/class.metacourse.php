@@ -21,6 +21,7 @@ class metacourse extends master_course {
 
     function synchronize() {
         $this->sync_with_master_groups();
+        //$this->sync_with_master_groupings();
         $this->remove_deleted_master_groups_from_metacourse();
         $this->remove_deleted_master_groupings_from_metacourse();
         //$this->sync_groupings();
@@ -33,6 +34,22 @@ class metacourse extends master_course {
                 
     } // function sync_with_master_groups
 
+
+    function sync_with_master_groupings() {
+        foreach($this->master_course->groupings as $master_grouping) {
+            $this->sync_master_grouping($master_grouping);
+        }      
+    } // function sync_with_master_groupings
+
+
+    function sync_master_grouping($master_grouping) {
+        if ($metagrouping = $this->find_metagrouping_for($master_grouping['id']) ) {
+            $this->update_metagrouping($metagrouping, $master_grouping);
+        } else {
+            $metagrouping = $this->copy_master_grouping($master_grouping);
+        }
+    } // function sync_master_grouping
+    
 
     function sync_master_group($master_group) {
         if ($metagroup = $this->find_metagroup_for($master_group['id']) ) {
@@ -117,7 +134,6 @@ class metacourse extends master_course {
     } // function update_metagroup
 
 
-
     function find_metagroup_for($mastergroup_id) {
         global $CFG;
         if (! $rs = get_recordset_sql("SELECT * FROM {$CFG->prefix}groups WHERE id IN (
@@ -147,7 +163,7 @@ class metacourse extends master_course {
         $metagroups_group = new object();
         $metagroups_group->metagroups_block_id = $this->master_course->block_instance_id;
         $metagroups_group->group_id = $new_group->id;
-        $metagroups_group->parent_group_id = $master_group['id'];
+            $metagroups_group->parent_group_id = $master_group->id;
         $metagroups_group->master_course_id = $this->master_course->id;
         $metagroups_group->metacourse_id = $this->id;
         $metagroups_group->timecreate = $metagroups_group->timecreate = time();

@@ -1,7 +1,7 @@
 <?php
 // Preliminaries
 require_once( "../../config.php" );
-require_once("{$CFG->dirroot}/blocks/metagroups/class.metagroups.php");
+require_once("{$CFG->dirroot}/blocks/metagroups/class.synchronizer.php");
 require_once("{$CFG->dirroot}/blocks/moodleblock.class.php");
 require_once("{$CFG->dirroot}/blocks/metagroups/block_metagroups.php");
 
@@ -18,7 +18,7 @@ if (! has_capability('block/metagroups:useblock', $context, $USER->id)) {
     error("You are not allowed to perform this operation");  
 }
 // Actually requested Action
-$synchronizer = new metagroups($block_instance_id);
+$synchronizer = new synchronizer($block_instance_id);
 $synchronizer->synchronize_metacourses_for($master_course_id);
 //print_object($synchronizer->associated_metacourses($course->id));
 echo "Synchronization completed";
