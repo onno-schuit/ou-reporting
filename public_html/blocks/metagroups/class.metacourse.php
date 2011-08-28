@@ -40,7 +40,7 @@ class metacourse extends master_course {
         } else {
             $metagroup = $this->copy_master_group($master_group);
         }
-        //$this->sync_group_members($master_group, $metagroup);
+        $this->sync_group_members($master_group, $metagroup);
     } // function sync_master_group
 
 
@@ -147,7 +147,7 @@ class metacourse extends master_course {
         $metagroups_group = new object();
         $metagroups_group->metagroups_block_id = $this->master_course->block_instance_id;
         $metagroups_group->group_id = $new_group->id;
-        $metagroups_group->parent_group_id = $master_group->id;
+        $metagroups_group->parent_group_id = $master_group['id'];
         $metagroups_group->master_course_id = $this->master_course->id;
         $metagroups_group->metacourse_id = $this->id;
         $metagroups_group->timecreate = $metagroups_group->timecreate = time();
@@ -157,13 +157,14 @@ class metacourse extends master_course {
 
 
     function sync_group_members($master_group, $metagroup) {
-        // find group members from master_group
-        if (! $master_group_members = $this->find_group_members_for($master_group)) return;
-        // Simply replace existing set of metagroup members with mastergroup members 
-        // (group member id does not seem to be in use as foreign key)
-        $this->replace_metamembers_with($master_group_members);
-
+        global $CFG;
+        execute_sql("DELETE FROM {$CFG->prefix}groups_members WHERE groupid = " . $metagroup['id'], false);
+        execute_sql("INSERT INTO {$CFG->prefix}groups_members (groupid, userid, timeadded) 
+                     SELECT  " . $metagroup['id'] . ", userid, timeadded 
+                     FROM {$CFG->prefix}groups_members 
+                     WHERE groupid = " . $master_group['id'], false);
     } // function sync_group_members
+
 } // class metacourse
 
 ?>
