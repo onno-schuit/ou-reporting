@@ -1,4 +1,5 @@
 <?php
+// Needs refactoring
 
 class metacourse extends master_course {
 
