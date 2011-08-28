@@ -43,9 +43,11 @@ class master_course {
 
 
     function synchronize_all() {
+        //exit(print_object($this->associated_metacourse_ids));
         foreach($this->associated_metacourse_ids as $metacourse_row) {
             $metacourse = new metacourse($metacourse_row['id'], $this);
             $metacourse->synchronize();
+            //echo "<h2>okay so far</h2>";
         }        
     } // function synchronize
 

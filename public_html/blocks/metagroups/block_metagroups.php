@@ -27,7 +27,7 @@ class block_metagroups extends block_base {
         $this->content->text = '';
         $this->content->footer = '';
         
-        $metagroups = new metagroups();
+        $metagroups = new metagroups($this->instance->id);
         
         // TEST
         /*

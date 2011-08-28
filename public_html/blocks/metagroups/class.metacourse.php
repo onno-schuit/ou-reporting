@@ -10,7 +10,7 @@ class metacourse extends master_course {
     function __construct($id, $master_course) {
         global $CFG;
 
-        parent::__construct($id);
+        parent::__construct($id, $master_course->block_instance_id);
         $this->master_course = $master_course;
         $this->load_all(array(
             'meta_groups' => "SELECT * FROM {$CFG->prefix}metagroups_groups WHERE metacourse_id = $this->id",
@@ -22,21 +22,9 @@ class metacourse extends master_course {
     function synchronize() {
         $this->sync_with_master_groups();
         $this->remove_deleted_master_groups_from_metacourse();
+        $this->remove_deleted_master_groupings_from_metacourse();
         //$this->sync_groupings();
     } // function synchronize
-
-
-    function remove_deleted_master_groups_from_metacourse() {
-        execute_sql("DELETE FROM {$CFG->prefix}groups_members WHERE groupid IN (
-                         SELECT group_id
-                         FROM {$CFG->prefix}metagroups_groups 
-                         WHERE master_course_id = {$this->master_course->id} 
-                         AND parent_group_id NOT IN (SELECT id {$CFG->prefix}groups)
-                     )", false);
-        // idem for groups
-    } // function remove_deleted_master_groups_from_metacourse 
-
-
 
     function sync_with_master_groups() {
         foreach($this->master_course->groups as $master_group) {
@@ -48,7 +36,7 @@ class metacourse extends master_course {
 
     function sync_master_group($master_group) {
         if ($metagroup = $this->find_metagroup_for($master_group['id']) ) {
-            $this->update_metagroup($metagroup);
+            $this->update_metagroup($metagroup, $master_group);
         } else {
             $metagroup = $this->copy_master_group($master_group);
         }
@@ -56,11 +44,88 @@ class metacourse extends master_course {
     } // function sync_master_group
 
 
+    function remove_deleted_master_groups_from_metacourse() {
+        global $CFG;
+
+        $master_group_ids = '0';
+        if (count($this->master_course->groups)) {
+            $master_group_ids = join(',', array_keys($this->master_course->groups));
+        }
+        // delete groupmembers
+        execute_sql("DELETE FROM {$CFG->prefix}groups_members WHERE groupid IN (
+                         SELECT group_id
+                         FROM {$CFG->prefix}metagroups_groups 
+                         WHERE master_course_id = {$this->master_course->id} 
+                         AND parent_group_id NOT IN ($master_group_ids)
+                     )", false);
+
+        // delete groups
+        execute_sql("DELETE FROM {$CFG->prefix}groups WHERE id IN (
+                         SELECT group_id
+                         FROM {$CFG->prefix}metagroups_groups 
+                         WHERE master_course_id = {$this->master_course->id} 
+                         AND parent_group_id NOT IN ($master_group_ids)
+                     )", false);
+
+        // delete registration with block
+        execute_sql("DELETE FROM {$CFG->prefix}metagroups_groups 
+                     WHERE master_course_id = {$this->master_course->id} 
+                     AND parent_group_id NOT IN ($master_group_ids)", false);
+    } // function remove_deleted_master_groups_from_metacourse 
+
+
+    function remove_deleted_master_groupings_from_metacourse() {
+        global $CFG;
+
+        $master_grouping_ids = '0';
+        if (count($this->master_course->groupings)) {
+            $master_grouping_ids = join(',', array_keys($this->master_course->groupings));
+        }
+
+        // delete grouping_groups
+        execute_sql("DELETE FROM {$CFG->prefix}groupings_groups WHERE id IN (
+                         SELECT grouping_id
+                         FROM {$CFG->prefix}metagroups_groupings 
+                         WHERE master_course_id = {$this->master_course->id} 
+                         AND parent_grouping_id NOT IN ($master_grouping_ids)
+                     )", false);
+
+         // delete groupings
+        execute_sql("DELETE FROM {$CFG->prefix}groupings WHERE id IN (
+                         SELECT grouping_id
+                         FROM {$CFG->prefix}metagroups_groupings 
+                         WHERE master_course_id = {$this->master_course->id} 
+                         AND parent_grouping_id NOT IN ($master_grouping_ids)
+                     )", false);       
+
+        // delete registration with block
+        execute_sql("DELETE FROM {$CFG->prefix}metagroups_groupings 
+                     WHERE master_course_id = {$this->master_course->id} 
+                     AND parent_grouping_id NOT IN ($master_grouping_ids)", false);
+    } // function remove_deleted_master_groupings_from_metacourse 
+
+
+
+
+
+    function update_metagroup($metagroup, $master_group) {
+        if ($metagroup['name'] == $master_group['name']) return;
+        $metagroup['name'] = $master_group['name'];
+        $metagroup['timemodified'] = time();
+        $obj = (object) $metagroup;
+        return update_record('groups', $obj);
+    } // function update_metagroup
+
+
 
     function find_metagroup_for($mastergroup_id) {
         global $CFG;
         if (! $rs = get_recordset_sql("SELECT * FROM {$CFG->prefix}groups WHERE id IN (
-            SELECT group_id FROM {$CFG->prefix}metagroups_groups WHERE parent_group_id = $mastergroup_id)")) return false;
+                                           SELECT group_id 
+                                           FROM {$CFG->prefix}metagroups_groups 
+                                           WHERE parent_group_id = $mastergroup_id
+                                           AND metacourse_id = {$this->id}
+                                       )")) return false;
         return $rs->FetchRow();
     } // function find_metagroup_for
 
