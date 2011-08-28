@@ -3,7 +3,7 @@
 $string['blockname'] = 'MetaGroups';
 $string['template'] = 'Template course';
 $string['ok'] = 'OK';
-$string['copy_label'] = 'Copy users & groups from:';
+$string['copy_label'] = 'Copy groupings & groups to meta courses.';
 $string['invalid_submit'] = 'Please select a template course first.';
 
 

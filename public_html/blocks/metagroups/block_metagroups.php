@@ -1,6 +1,5 @@
 <?php 
 
-require_once("{$CFG->dirroot}/blocks/metagroups/class.metagroups.php");
 
 /**
  */
@@ -27,7 +26,6 @@ class block_metagroups extends block_base {
         $this->content->text = '';
         $this->content->footer = '';
         
-        $metagroups = new metagroups($this->instance->id);
         
         // TEST
         /*
