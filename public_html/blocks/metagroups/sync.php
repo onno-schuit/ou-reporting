@@ -13,6 +13,9 @@ if (! $course = get_record('course', 'id', $master_course_id)) {
 require_login($course->id);
 $context = get_context_instance(CONTEXT_COURSE, $course->id);
 
+$navigation = build_navigation('');
+print_header_simple(get_string('sync_completed', 'block_metagroups'), '', $navigation, '', '', true);
+
 if (! has_capability('block/metagroups:useblock', $context, $USER->id)) {
     error("You are not allowed to perform this operation");  
 }
@@ -20,5 +23,8 @@ if (! has_capability('block/metagroups:useblock', $context, $USER->id)) {
 $synchronizer = new synchronizer($block_instance_id);
 $synchronizer->synchronize_metacourses_for($master_course_id);
 //print_object($synchronizer->associated_metacourses($course->id));
-echo "Synchronization completed";
+print_box( get_string('sync_completed', 'block_metagroups'), 'generalbox', 'intro');
+print_continue("{$CFG->wwwroot}/course/view.php?id=$course->id");
+
+print_footer($course);
 ?>

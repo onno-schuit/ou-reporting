@@ -52,7 +52,7 @@ class block_metagroups extends block_base {
                   return true;
                 }
               </script>
-              <form onsubmit='return metagroups_validation();' action='$CFG->wwwroot/blocks/metagroups/test.php' name='template_course' method='post'>
+              <form onsubmit='return metagroups_validation();' action='$CFG->wwwroot/blocks/metagroups/sync.php' name='template_course' method='post'>
                 <input type='hidden' name='master_course_id' value='{$COURSE->id}'/>
                 <input type='hidden' name='block_instance_id' value='{$this->instance->id}'/>
                 <div style='text-align:center'>
@@ -91,19 +91,19 @@ class block_metagroups extends block_base {
      * @return boolean
      */
     function instance_delete() {
-        delete_records_select("metagroupss", " block_instance_id = {$this->instance->id} ");
+        delete_records_select("metagroups", " block_instance_id = {$this->instance->id} ");
         return true;
     }
     
     
     public static function store_template_course_id($course_id, $template_course_id, $block_instance_id) {
         global $CFG;
-        if (! $record = get_record("metagroupss", "block_instance_id", $block_instance_id)) {
-            return execute_sql("INSERT INTO {$CFG->prefix}metagroupss (course_id, template_course_id, block_instance_id) VALUES ($course_id, $template_course_id, $block_instance_id)", false);
+        if (! $record = get_record("metagroups", "block_instance_id", $block_instance_id)) {
+            return execute_sql("INSERT INTO {$CFG->prefix}metagroups (course_id, template_course_id, block_instance_id) VALUES ($course_id, $template_course_id, $block_instance_id)", false);
         }
         if ($record->template_course_id != $template_course_id) {
             $record->template_course_id = $template_course_id;          
-            return update_record("metagroupss", $record);
+            return update_record("metagroups", $record);
         }
     } // public static function store_template_course_id
     
