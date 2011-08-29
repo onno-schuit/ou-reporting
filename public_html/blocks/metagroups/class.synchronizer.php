@@ -2,6 +2,8 @@
 
 require_once("{$CFG->dirroot}/blocks/metagroups/class.master_course.php");
 require_once("{$CFG->dirroot}/blocks/metagroups/class.metacourse.php");
+require_once("{$CFG->dirroot}/blocks/metagroups/class.master_group.php");
+require_once("{$CFG->dirroot}/blocks/metagroups/class.master_grouping.php");
 
 class synchronizer {
 
