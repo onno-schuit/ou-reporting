@@ -2,7 +2,6 @@
 // Preliminaries
 require_once( "../../config.php" );
 require_once("{$CFG->dirroot}/blocks/metagroups/class.synchronizer.php");
-require_once("{$CFG->dirroot}/blocks/moodleblock.class.php");
 require_once("{$CFG->dirroot}/blocks/metagroups/block_metagroups.php");
 
 $master_course_id 	= required_param('master_course_id', PARAM_INT);
