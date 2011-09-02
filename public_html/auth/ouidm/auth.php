@@ -121,7 +121,7 @@ class auth_plugin_ouidm extends auth_plugin_base {
     	} elseif (!empty($ouidm_data)) {	
     		$this->ouidm_redirect('There was a problem with your account! Please contact the administrator (elosa@ou.nl). Code:1203');
     	}
-    }
+    } // function loginpage_hook
         
     
 
@@ -263,7 +263,39 @@ class auth_plugin_ouidm extends auth_plugin_base {
     function ouidm_createuser($username, $password) {
     	global $CFG;
 
-    	//connect to oracle database
+        $user_info = $this->get_user_info($username);
+
+	    $this->user	= new stdClass();    	
+        $this->set_user_properties($username, $password, $user_info);    	
+		       
+        
+        if (! $this->course_exists_for_kr_code_with_user("'$username'")){
+         	$this->ouidm_redirect('There was a problem with your account! Please contact the administrator (elosa@ou.nl). Code:1205');
+        	return false;       
+        }
+
+        //print_object($this->user);
+        if (! $this->user->id = insert_record('user', $this->user)) {
+           $this->ouidm_redirect('There was a problem with your account! Please contact the administrator (elosa@ou.nl). Code:1204');
+           return false;
+        }
+        return $this->enrol_into_course();
+    } // function ouidm_createuser
+
+
+    function enrol_into_course() {
+        if ( empty($this->user->idnumber)) return false;
+
+        $user = get_record('user', 'id', $this->user->id); // ?? O.S.: shouldn't $user be identical to $this->user, at this point?
+        if (!$course = get_record('course', 'idnumber', $this->user->idnumber)) return false;
+
+        enrol_into_course($course, $user, 'ouidm');
+        return $course->id;
+    } // function enrol_into_course
+
+
+    function get_user_info($username) {
+     	//connect to oracle database
     	$conn = connect_oracle($this->config->user, $this->config->pass, $this->config->host.'/'.$this->config->name);
 		if (!$conn) {
 			$this->ouidm_redirect("There was a problem with your account! Please contact the administrator (elosa@ou.nl). Code:1201");    	
@@ -281,61 +313,31 @@ class auth_plugin_ouidm extends auth_plugin_base {
 		
 		$user_info = oci_fetch_array($stid, OCI_ASSOC);
 		
-	    $this->user		       = new stdClass();    	
-    	
-    	$this->user->confirmed   = 1;
+   		oci_free_statement($stid);
+		oci_close($conn);               
+        return $user_info;
+    } // function get_user_info
+
+
+    function set_user_properties($username, $password, $user_info) {
+        global $CFG;
+     	$this->user->confirmed   = 1;
         $this->user->lang        = current_language();
         $this->user->firstaccess = time();
         $this->user->mnethostid  = $CFG->mnet_localhost_id;
         $this->user->secret      = random_string(15);
         $this->user->auth        = 'ouidm';
-        $this->user->firstname	 = $user_info['VOORLETTERS'];
-        $this->user->lastname	 = $user_info['VOL_NAAM'];
-        $this->user->email	 	 = $user_info['E_MAIL_ADRES'];
-		$this->user->city	 	 = $user_info['W_PLAATS'];
+        $this->user->firstname	 = mysql_escape_string($user_info['VOORLETTERS']);
+        $this->user->lastname	 = mysql_escape_string($user_info['VOL_NAAM']);
+        $this->user->email	 	 = mysql_escape_string($user_info['E_MAIL_ADRES']);
+		$this->user->city	 	 = mysql_escape_string($user_info['W_PLAATS']);
         $this->user->country	 = 'NL';
         $this->user->lang	 	 = 'nl_utf8';
 		$this->user->username    = $username;
         $this->user->password    = hash_internal_user_password($password);
-        $this->user->idnumber    = $user_info['KR_CODE'];
-		       
-   		oci_free_statement($stid);
-		oci_close($conn);
-	
-        
-		/**
-		 * First of all controle if the course exists, if not don't even create 
-		 * the user account. 
-		 * 
-		 * */
-      
-        if ($this->ouidm_course_exists($str_username)){
-        
-	        if (!$this->user->id = insert_record('user', $this->user)) {
-	           $this->ouidm_redirect('There was a problem with your account! Please contact the administrator (elosa@ou.nl). Code:1204');
-	           return false;
-	        }
-	        
-	        if (!empty($this->user->idnumber)) {
-		        $user = get_record('user', 'id', $this->user->id);
-		        
-		        	$course = get_record('course', 'idnumber', $this->user->idnumber);
-		     
-		        	if (!empty($course->id)) {
-		        		$courseid = $course->id;
-		        		enrol_into_course($course, $user, 'ouidm');
-		        }
-	        }
-        }
-        else{
-        	$this->ouidm_redirect('There was a problem with your account! Please contact the administrator (elosa@ou.nl). Code:1205');
+        $this->user->idnumber    = $user_info['KR_CODE'];               
+    } // function set_user_properties
 
-        	return false;
-        }
-        
-        
-        return $courseid;
-    }
     
     /**
      * Examine the config file and redirect if defined
@@ -385,7 +387,7 @@ class auth_plugin_ouidm extends auth_plugin_base {
 	 * @params: $username
 	 * @return: boolean true if course exist false if not
 	 **/
-    function ouidm_course_exists($username){
+    function course_exists_for_kr_code_with_user($username){
 
    	 global $CFG;	 
 		 
@@ -412,7 +414,7 @@ class auth_plugin_ouidm extends auth_plugin_base {
     	}
 	
 		return false;	
-	}
+	} // function course_exists_for_kr_code_with_user
     
     /**
      * Updates user group for all of the courses that a user
@@ -618,4 +620,3 @@ class auth_plugin_ouidm extends auth_plugin_base {
 }
 
 ?>
-
