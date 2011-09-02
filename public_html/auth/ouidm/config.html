@@ -1,0 +1,230 @@
+<?php
+
+	// set to defaults if undefined
+
+	if (!isset($config->trusted_server1)) {
+    	$config->trusted_server1 = '127.0.0.1';
+	}
+	if (!isset($config->trusted_server2)) {
+    	$config->trusted_server2 = '';
+	}
+	if (!isset($config->trusted_server3)) {
+	    $config->trusted_server3 = '';
+	}
+	if (!isset($config->failurl)) {
+	    $config->failurl = '';
+	}
+
+   	if (!isset($config->host)) {
+        $config->host = 'localhost';
+    }
+    if (!isset($config->name)) {
+        $config->name = '';
+    }
+    if (!isset($config->user)) {
+        $config->user = '';
+    }
+    if (!isset($config->pass)) {
+        $config->pass = '';
+    }
+    if (!isset($config->table)) {
+        $config->table = '';
+	}
+
+
+?>
+<table cellspacing="0" cellpadding="5" border="0">
+
+<tr>
+   <td colspan="2">
+        <h4><?php print_string('auth_server_settings', 'auth_ouidm') ?> </h4>
+   </td>
+</tr>
+
+<tr valign="top" class="required">
+    <td align="right"><?php print_string("auth_trusted_server1", "auth_ouidm") ?>: </td>
+    <td>
+        <input name="trusted_server1" type="text" size="30" value="<?php echo $config->trusted_server1 ?>" />
+        <?php
+
+        if (isset($err["trusted_server1"])) {
+            formerr($err["trusted_server1"]);
+        }
+
+        ?>
+    </td>
+    <td>
+        <?php
+
+        print_string("auth_trusted_server1_des", "auth_ouidm");
+
+        ?>
+    </td>
+</tr>
+
+<tr valign="top">
+    <td align="right"><?php print_string("auth_trusted_server2", "auth_ouidm") ?>: </td>
+    <td>
+        <input name="trusted_server2" type="text" size="30" value="<?php echo $config->trusted_server2 ?>" />
+        <?php
+
+        if (isset($err["trusted_server2"])) {
+            formerr($err["trusted_server2"]);
+        }
+
+        ?>
+    </td>
+    <td>
+        <?php
+
+        print_string("auth_trusted_server2_des", "auth_ouidm");
+
+        ?>
+    </td>
+</tr>
+
+<tr valign="top">
+    <td align="right"><?php print_string("auth_trusted_server3", "auth_ouidm") ?>: </td>
+    <td>
+        <input name="trusted_server3" type="text" size="30" value="<?php echo $config->trusted_server3 ?>" />
+        <?php
+
+        if (isset($err["trusted_server3"])) {
+            formerr($err["trusted_server3"]);
+        }
+
+        ?>
+    </td>
+    <td>
+        <?php
+
+        print_string("auth_trusted_server3_des", "auth_ouidm");
+
+        ?>
+    </td>
+</tr>
+
+
+<tr valign="top">
+    <td align="right"><?php print_string("auth_failurl", "auth_ouidm") ?>: </td>
+    <td>
+        <input name="failurl" type="text" size="30" value="<?php echo $config->failurl ?>" />
+        <?php
+
+        if (isset($err["failurl"])) {
+            formerr($err["failurl"]);
+        }
+
+        ?>
+    </td>
+    <td>
+        <?php
+
+        print_string("auth_failurl_des", "auth_ouidm");
+
+        ?>
+    </td>
+</tr>
+
+<tr>
+   <td colspan="2">
+        <h4><?php print_string('auth_database_settings', 'auth_ouidm') ?> </h4>
+   </td>
+</tr>
+
+<tr valign="top">
+    <td align="right"><?php print_string("auth_host", "auth_ouidm") ?>: </td>
+    <td>
+        <input name="host" type="text" size="30" value="<?php echo $config->host ?>" />
+        <?php
+
+        if (isset($err["host"])) {
+            formerr($err["host"]);
+        }
+
+        ?>
+    </td>
+    <td>
+        <?php
+
+        print_string("auth_host_des", "auth_ouidm");
+
+        ?>
+    </td>
+</tr>
+
+<tr valign="top">
+    <td align="right"><?php print_string("auth_name", "auth_ouidm") ?>: </td>
+    <td>
+        <input name="name" type="text" size="30" value="<?php echo $config->name ?>" />
+        <?php
+
+        if (isset($err["name"])) {
+            formerr($err["name"]);
+        }
+
+        ?>
+    </td>
+    <td>
+        <?php
+
+        print_string("auth_name_des", "auth_ouidm");
+
+        ?>
+    </td>
+</tr>
+
+<tr valign="top">
+    <td align="right"><?php print_string("auth_user", "auth_ouidm") ?>: </td>
+    <td>
+        <input name="user" type="text" size="30" value="<?php echo $config->user ?>" />
+        <?php
+
+        if (isset($err["user"])) {
+            formerr($err["user"]);
+        }
+
+        ?>
+    </td>
+    <td>
+        <?php
+
+        print_string("auth_user_des", "auth_ouidm");
+
+        ?>
+    </td>
+</tr>
+
+<tr valign="top" class="required">
+    <td align="right"><label for="pass"><?php print_string("auth_dbpass", "auth_ouidm") ?></label></td>
+    <td>
+        <input id="pass" name="pass" type="text" size="30" value="<?php echo $config->pass?>" />
+        <?php
+
+        if (isset($err["pass"])) {
+            formerr($err["pass"]);
+        }
+
+        ?>
+    </td>
+    <td>
+    <?php print_string("auth_dbpass_des", "auth_ouidm") ?>
+    </td>
+</tr>
+
+<tr valign="top" class="required">
+    <td align="right"><label for="table"><?php print_string("auth_dbtable", "auth_ouidm") ?></label></td>
+    <td>
+        <input id="table" name="table" type="text" size="30" value="<?php echo $config->table?>" />
+        <?php
+
+        if (isset($err["table"])) {
+            formerr($err["table"]);
+        }
+
+        ?>
+    </td>
+    <td><?php print_string("auth_dbtable_des", "auth_ouidm") ?></td>
+</tr>
+
+</table>
