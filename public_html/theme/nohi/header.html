@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html<?php echo $direction ?>>
+<head>
+    <?php echo $meta ?>
+    <meta name="keywords" content="moodle, <?php echo $title ?> " />
+    <title><?php echo $title ?></title>
+    <link rel="shortcut icon" href="<?php echo $CFG->themewww .'/'. current_theme() ?>/favicon.ico" />
+    <?php include("$CFG->javascript"); ?>
+ 	<script src="<?php echo $CFG->themewww .'/'. current_theme() ?>/jquery.min.js"></script>
+  	<script type="text/javascript">
+   		$(document).ready(function() {
+    	$('#right-column').appendTo($('#left-column'));
+    	});
+  	</script>
+    
+</head>
+
+<body<?php
+    echo " $bodytags";
+    if ($focus) {
+        echo " onload=\"setfocus()\"";
+    }
+    ?>>
+
+<div id="page">
+
+<?php //Accessibility: 'headermain' is now H1, see theme/standard/styles_layout.css: .headermain
+      
+if ($heading) { 
+?>
+    <?php print_container_start(true, '', 'header'); ?>
+
+    <div id="logo">
+        <div class="headermenu"><?php echo $menu ?></div>    
+    </div>
+
+
+    <?php print_container_end(); ?>
+    
+<?php } ?>
+<?php 
+      if ($navigation) { ?>
+    <div class="navbar clearfix">
+        <div class="breadcrumb"><?php print_navigation($navigation); ?></div>
+        <div class="navbutton"><?php echo $button; ?></div>
+    </div>
+
+<?php } ?><!-- END OF HEADER --><?php print_container_start(true, '', 'content'); ?>

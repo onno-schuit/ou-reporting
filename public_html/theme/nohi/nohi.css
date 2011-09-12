@@ -1,0 +1,487 @@
+/**
+  *	NOHI Theme gemaakt door ir.M. K. Zamani (moodle@ou.nl)
+  */
+
+/*
+ *	 Body styles
+ */
+
+body {
+	background-color:#e7e5e0;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size : 14px;
+}
+a:link {
+	color:#8B4D10; 
+       /*	!important; */
+	text-decoration: none;
+}
+a:visited {
+    /*
+	color:#E97D18; 
+    */
+	color:#8B4D10; 
+	text-decoration: none;
+}
+a:hover {
+	color: #e87d1d;
+	text-decoration: none;
+}
+a.dimmed:link, a.dimmed:visited {
+	color:#aaaaaa;
+	text-decoration: none;
+}
+div#page {
+	position:relative;
+	border: 0px solid #ffffff;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 960px;
+}
+#layout-table {
+	margin-top:0;
+	padding-top:10px;
+}
+#layout-table #middle-column {
+	vertical-align:top;
+	padding-left:5px !important;
+	padding-right:5px !important;
+	margin-left:0 !important;
+}
+#layout-table #left-column {
+	vertical-align:top;
+	padding-right:9px;
+	margin-left:0 !important;
+	margin-top:auto;
+	margin-bottom:auto;
+}
+
+#layout-table #right-column {
+	vertical-align:top;
+	padding-right:9px;
+	margin-left:0 !important;
+	margin-top:auto;
+	margin-bottom:auto;
+}
+
+#content {
+	background: #ffffff url(images/core/content_bg.png) center repeat-y; /* The color round content is 7c7979*/
+	margin-top:0;
+	padding-top:10px;
+}
+hr {
+	border-bottom:1px dotted #cccccc;
+	border-top:1px solid #ffffff !important;
+	border-left:1px solid #ffffff !important;
+	border-right:1px solid #ffffff !important;
+}
+h1.main, h2.main, h3.main, h4.main, h5.main, h6.main {
+	text-align: center;
+	margin:0px;
+	padding-top:10px;
+	padding-bottom:10px;
+}
+th.header, td.header, h1.header, h2.header, h3.header, div.header {
+	border-left: 0px;
+	border-right: 0px;
+	border-bottom: 0px;
+	color: #505050;
+}
+.header {
+	border: none !important;
+	clear: both;
+}
+
+.headermenu{
+	padding-left: 500px;
+	padding-top: 80px;
+	padding-right: 10px;
+}
+.generalbox {
+	border: 0px;
+!important;
+}
+#intro.generalbox {
+	width:560px;
+!important;
+}
+/*
+ *	 Header
+ */
+
+#header {
+	height: 100px;
+}
+#logo {
+	background: url(images/header/header_with_logo.png) no-repeat left top;
+	width: 100%;
+	height: 100px;
+	float: left;
+	left: 0px;
+}
+/*
+ *	 Footer
+ */
+
+#footer {
+	background: url(images/footer/footer.png) no-repeat left bottom;
+	margin-top: 0px;
+	height:100px;
+	margin-bottom: 0px;
+}
+#footer .footerlogos {
+	margin-top: 5px;
+	border-top: 1px dotted #cccccc;
+}
+#footer .footerlogos ul li {
+	padding-left: 5px;
+	padding-right: 5px;
+	display: inline;
+	margin:2px;
+}
+#footer p {
+	font-size : 10px;
+}
+#footer .logininfo {
+	padding-top:40px;
+}
+#footer .createdby {
+	display:none;
+}
+/*
+ *	 CustomProfileBlock
+ */
+
+#profileblock {
+	float: right;
+	text-align: right;
+	max-width: 550px;
+	right: 0px;
+}
+#profilepic {
+	text-align:right;
+	float: right;
+	margin: 8px;
+	width: 80px;
+	height: 80px;
+	border: 1px solid #ffffff;
+}
+#profilename {
+	background-color: transparent;
+	text-align:right;
+	width: 440px;
+	margin-right: 5px;
+	margin-top:12px;
+	margin-bottom:0px;
+	float: left;
+}
+.profilename, .profilename a {
+	background-color: #ffffff;
+	color:#2f2f2f;
+	font-size:1.4em;
+	letter-spacing: -3px;
+	text-decoration: none;
+	font-weight:bold;
+	margin-right:5px;
+}
+.profilename, .profilename a:hover {
+	background-color: #ffffff;
+	color: #f12711;
+	text-decoration:none;
+}
+#profileoptions {
+	text-align:right;
+	width: 440px;
+	margin-right: 10px;
+	margin-top: 0px;
+	float: left;
+}
+#profileoptions ul li {
+	padding-left: 10px;
+	padding-right: 10px;
+	background-color: #ffffff;
+	display: inline;
+	margin-right:5px;
+}
+.profileoptions {
+	background-color: transparent;
+	color:#2f2f2f;
+	text-decoration: none;
+	letter-spacing: -1px;
+}
+.profileoptions, .profileoptions a {
+	background-color: transparent;
+	color:#2f2f2f;
+}
+.profileoptions a:hover {
+	background-color: transparent;
+	color: #f12711;
+	text-decoration:none;
+}
+/*
+ *	 Menubar Date
+ */
+ 
+#nohi_menu_date {
+	float:right;
+	height:30px;
+	color: #ffffff;
+	text-decoration:none;
+	padding-top: 16px;
+	padding-right: 8px;
+	padding-bottom: 0;
+	padding-left: 17px;
+}
+.tabrow1{
+	width:950px !important;
+	margin-left:5px !important;
+
+}
+/*
+ *	 NavBar
+ */
+
+.navbar {
+	background:#ffffff url(images/header/breadcrumb.png) no-repeat top right;
+	border-top:0px;
+	border-bottom:solid 0px gray;
+	border-left:0px;
+	border-right:0px;
+	height:27px;
+	color:#FFF;
+	vertical-align: middle;
+	padding-top:5px;
+}
+.navbar a {
+	color:#FFF;
+}
+
+/*
+ *	 Side Block (We only use the right side)
+ */
+
+.sideblock {
+	width:260px;
+	border-bottom-width: 1px;
+	border-top-style: none;
+	border-bottom-style: solid;
+	border-bottom-color: #CCC;
+	padding-left:5px;
+}
+.sideblock a {
+	text-decoration: none;
+	font-size: 12px;
+}
+
+/*
+.sideblock a:hover, .admintree a:hover {
+    color: #000000;
+    border: 1px dashed red;
+}
+*/
+
+.sideblock .content {
+	background-color:#ededed;
+	border: none !important;
+	line-height:150%;
+}
+.sideblock .header {
+	background: url(images/sideblocks/block_header.png) no-repeat left top;
+	height: 33px;
+	width: 100%;
+	margin:0;
+	padding:0;
+}
+.sideblock h2 {
+	font-size: 15px;
+	color: #000;
+	padding-top: 10px;
+	padding-bottom: 2px;
+	padding-left: 7px;
+}
+.sideblock .commands {
+	background-color: #ededed !important;
+	border: 1px solid #ffffff;
+	padding:0px;
+	margin:0px;
+	float: left;
+	width:259px;
+}
+.sideblock .header .hide-show-image {
+	padding-right:10px;
+	padding-top:10px;
+}
+/*
+ *	 Course (the middle bit)
+ */
+
+.coursebox {
+	background: #ffffff;
+	border: 0px;
+	margin-bottom: 0px;
+	margin-right: 2px;
+}
+body#site-index .headingblock, body#course-view .headingblock {
+	margin-bottom: 0px;
+}
+#course-view .headingblock {
+	display:none;
+}
+.section {
+	background: #ffffff;
+}
+
+#course-view .section td.content {
+	background: #f2f1f1 url(images/core/content_top.png) no-repeat left top;
+	margin:0;
+	border-top:0px;
+	border-left:0px;
+	border-right:0px;
+
+	line-height:130%;
+}
+#course-view .section, .summary{
+	padding-top:-20px;
+	margin:0;
+}
+#course-view .section td.side {
+	border-width:0px;
+}
+#course-view .section .activity {
+	background: #f2f1f1;
+}
+#course-view .section .left {
+	display:none;
+}
+#section-0 .content {
+	background: #C9C9C9 url(images/core/content_top_null.png) no-repeat left top !important;
+	width:653px;
+}
+
+/*
+ *	Modules: Forum
+ */
+
+.forumpost {
+	border: 0px;
+	width: 850px;
+	overflow:none;
+	margin-top:10px !important;
+	margin-left:auto !important;
+	margin-right:auto !important;
+}
+.forumpost .left {
+	background:#ffffff url('images/forum/leftpost.png') no-repeat top left;
+}
+.forumpost .picture, .forumpost .topic {
+	background:#f1fafd;
+	border:0px;
+}
+.forumpost .topic a:link, .forumpost .topic a:visited {
+}
+.forumpost img {
+	max-width: 100%;
+}
+.forumheaderlist {
+	width:900px;
+	margin-left:auto;
+	margin-right:auto;
+}
+.forumheaderlist .discussion .starter {
+	background:#f1fafd;
+	width:900px;
+}
+
+#mod-forum-view .subscription{
+ margin-right:20px;
+}
+
+#mod-forum-view form.popupform label{
+	padding-left: 10px;
+}
+/*
+ *	Modules: Calendar
+ */
+
+/* colors for calendar events */
+#calendar .event_global, .minicalendar .event_global, .block_calendar_month .event_global {
+	border-color:#cff689 !important;
+	background-color:#cff689;
+}
+#calendar .event_course, .minicalendar .event_course, .block_calendar_month .event_course {
+	border-color:#c6dfeb !important;
+	background-color:#c6dfeb;
+}
+#calendar .event_group, .minicalendar .event_group, .block_calendar_month .event_group {
+	border-color:#feffc2 !important;
+	background-color:#feffc2;
+}
+#calendar .event_user, .minicalendar .event_user, .block_calendar_month .event_user {
+	border-color:#d9c6e2 !important;
+	background-color:#d9c6e2;
+}
+table.minicalendar tr td.weekend {
+	color: red;
+}
+#calendar .duration_global, .minicalendar .duration_global {
+	border-top-color:#cff689 !important;
+	border-bottom-color:#cff689 !important;
+}
+#calendar .duration_course, .minicalendar .duration_course {
+	border-top-color:#FF9966 !important;
+	border-bottom-color:#FF9966 !important;
+}
+#calendar .duration_course0, .minicalendar .duration_course0 {
+	border-top-color:#FF9966 !important;
+	border-bottom-color:#FF9966 !important;
+}
+#calendar .duration_course1, .minicalendar .duration_course1 {
+	border-top-color:#0099FF !important;
+	border-bottom-color:#0099FF !important;
+}
+#calendar .duration_course2, .minicalendar .duration_course2 {
+	border-top-color:#FFFF00 !important;
+	border-bottom-color:#FFFF00 !important;
+}
+#calendar .duration_group, .minicalendar .duration_group {
+	border-top-color:#FBBB23 !important;
+	border-bottom-color:#FBBB23 !important;
+}
+#calendar .duration_user, .minicalendar .duration_user {
+	border-top-color:#A1BECB !important;
+	border-bottom-color:#A1BECB !important;
+}
+#calendar .weekend, .minicalendar .weekend {
+	color:red;
+}
+.que {
+	margin: 10px;
+}
+.forumpost, blogpost blogsite {
+	padding:0;
+	margin:0;
+}
+.forumpost, blogpost td {
+	width:570px;
+}
+.AccordionPanelOpen .summary {
+	padding:5px;
+	background-color: #FFFFFF;
+	border-width:0.5px;
+	border-style:dashed;
+	border-color:#000;
+	width:610px;	
+}
+
+.AccordionPanelTab a.autolink:link, a.autolink:visited 
+{
+  background-color: transparent;
+}
+
+/**
+File manager block
+*/
+
+#blocks-file_manager-view #content p{
+	padding:5px;
+}
