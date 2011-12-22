@@ -2,6 +2,7 @@ README.TXT for Moodle OU-IDM Auth plugin
 
 Author: Menno de Ridder (m.deridder@solin.nl)
 Copyrights: Stoas Intermedia
+Version: 2011122201
 
 The OU-IDM Auth Plugin is created to synchronize the IDM database with
 the Moodle database upon login. It creates, edits and deletes users,
