@@ -4,7 +4,14 @@
     require_once("../config.php");
 
     // can be overriden by auth plugins
-    $redirect = $CFG->wwwroot.'/';
+    //********************Gewijzig door: Ir. M. K. Zamani*********************
+    /*
+     * Datum: 03-03-2011
+     * De bedoeling is om ervoor te zorgen dat het uitloggen ook bij IDM gebeurt.
+     * Aanpassing MSC
+     * redirect aangepast nav weghalen moodle uit de dir structuur
+     */
+    $redirect = 'http://studienet.ou.nl/portal/logout';
 
     $sesskey = optional_param('sesskey', '__notpresent__', PARAM_RAW); // we want not null default to prevent required sesskey warning
 

@@ -32,7 +32,7 @@ class auth_plugin_ouidm extends auth_plugin_base {
         $this->config = get_config('auth/ouidm');   
         if (empty($this->config->extencoding)) {
             $this->config->extencoding = 'utf-8';
-        }
+        }     
     }
 
     //connect to oracle database
@@ -41,6 +41,10 @@ class auth_plugin_ouidm extends auth_plugin_base {
         return $conn;
     }
 
+    /* Function cron_ouidm_course_update() is
+     * meant to unenroll users from courses if
+     * the course has been deleted in the idm
+     * environment. */
     function cron_ouidm_course_update()
     {
         global $CFG;
@@ -50,9 +54,9 @@ class auth_plugin_ouidm extends auth_plugin_base {
         if (!$conn = $this->oracle_connect()) die('Couldn\'t asteblish connection with the oracle database.');
         foreach($users as $user)
         {
-            // if ($user->username == 'msc') {
+            if ($user->username == 'msc') {
                 if (!$this->ouidm_course_update($user->username, $conn)) $error = true;
-            // }
+            }
         }
         return (!$error);
     }
@@ -62,7 +66,6 @@ class auth_plugin_ouidm extends auth_plugin_base {
      */
     function loginpage_hook() {
         global $frm;
-
         
         $ouidm_data = stripslashes(optional_param('ouidmdata'));
             
@@ -79,11 +82,11 @@ class auth_plugin_ouidm extends auth_plugin_base {
             
             
             /**
-              Bug-Fix
+              Bug-Fix 
               Datum: 28-07-2011
-              Als de encryption niet werkt gaan we de gebruikersnaam gewoon van $_SERVER['HTTP_OUUSER'] overnemen.
-            */
-            $ipadrs = $_SERVER['SERVER_ADDR'];
+              Als de encryption niet werkt gaan we de gebruikersnaam gewoon van $_SERVER['HTTP_OUUSER'] overnemen.            
+            */          
+            $ipadrs = $_SERVER['SERVER_ADDR'];              
 
             
             
@@ -91,6 +94,7 @@ class auth_plugin_ouidm extends auth_plugin_base {
                 $this->ouidm_redirect('There was a problem with your account! Please contact the administrator (elosa@ou.nl). Code:1202');
             }           
 
+        
             /** 
              * @var Encryption
              * Encryption method.    
@@ -111,19 +115,20 @@ class auth_plugin_ouidm extends auth_plugin_base {
                 $decryt_username = $_SERVER['HTTP_OUUSER'];
                 $decryt_password = $_SERVER['HTTP_OUUSER'];                 
             }
+            
                         
             $internalKey = '416b736dSDwbe9X@';
             $internalPassword = md5($decryt_username.$internalKey);
              
             if ($user = get_record('user', 'username', $decryt_username, 'mnethostid', $CFG->mnet_localhost_id)) {
-                if (!validate_internal_user_password($user, $internalPassword)) {
+                if (!validate_internal_user_password($user, $internalPassword)) {                                       
                      /**
                      * The user exists, but logs in for the first time with OU-IMD 
                      * Make a password and log the user in
                      * */
                     if (!$this->user_update_password($decryt_username, $internalPassword)){
                         $this->ouidm_redirect("Can not update password");
-                    }
+                    }                   
                 }
             } else {
             //echo $decryt_username;
@@ -134,16 +139,15 @@ class auth_plugin_ouidm extends auth_plugin_base {
             //connect to oracle database
             if (!$conn = $this->oracle_connect()) $this->ouidm_redirect('There was a problem with your account! Please contact the administrator (elosa@ou.nl). Code:1201');      
 
-            $frm->username = $decryt_username;
-            $frm->password = $internalPassword;
-
-	     if (!$this->idm_user_exists($decryt_username, $conn)) return true;
             $this->ouidm_update_user($decryt_username, $conn);
             $this->ouidm_course_update($decryt_username, $conn);
             $this->ouidm_user_update_group($decryt_username, $conn);
+            $frm->username = $decryt_username;
+            $frm->password = $internalPassword;
             
             oci_close($conn);
 
+            
             return true;
         } elseif (!empty($ouidm_data)) {    
             $this->ouidm_redirect('There was a problem with your account! Please contact the administrator (elosa@ou.nl). Code:1203');
@@ -167,22 +171,9 @@ class auth_plugin_ouidm extends auth_plugin_base {
             return validate_internal_user_password($user, $password);
         }
         return false;
-    }
+    }    
     
-
-    function idm_user_exists($username, $conn) {
-	 $str_username = "'$username'";
-        $table_name = $this->config->table; 
-        
-        $sql = "SELECT * FROM {$table_name} WHERE IDENTIFIKATIE = '{$username}'";
-        $stid = oci_parse($conn, $sql);
-        oci_execute($stid);
-        
-	 oci_fetch_array($stid, OCI_ASSOC);
-	 return (oci_num_rows($stid) > 0) ? true : false;
-    }
-
-
+    
     /**
      * Updates the user's password.
      *
@@ -305,8 +296,8 @@ class auth_plugin_ouidm extends auth_plugin_base {
 
         $user_info = $this->get_user_info($username);
 
-        $this->user = new stdClass();
-        $this->set_user_properties($username, $password, $user_info);
+        $this->user = new stdClass();       
+        $this->set_user_properties($username, $password, $user_info);       
                
         
         if (! $this->course_exists_for_kr_code_with_user("'$username'")){
@@ -355,8 +346,7 @@ class auth_plugin_ouidm extends auth_plugin_base {
         $user_info = oci_fetch_array($stid, OCI_ASSOC);
         
         oci_free_statement($stid);
-        oci_close($conn);
-
+        oci_close($conn);               
         return $user_info;
     } // function get_user_info
 
@@ -534,7 +524,7 @@ class auth_plugin_ouidm extends auth_plugin_base {
             $courseids_idm[] = $mycourse_idm['KR_CODE'];
         }
         $courseids_idm[] = 'manual'; // Provision for manually added courses. Onno Schuit, 20110912
-
+        
         if (!$userid = $this->ouidm_get_user_id($username)->id) die('Couldn\t retreive user ID. Fix in code /auth/ouidm/auth.php');
         
         //All courses from Moodle
@@ -551,22 +541,16 @@ class auth_plugin_ouidm extends auth_plugin_base {
         if ($deleted_courses = array_diff($courseids_moodle, $courseids_idm)) {
             foreach ($deleted_courses as $my_deleted_course){
                 if ($my_deleted_course == 'manual') continue;
-		  $course = $this->ouidm_get_course($my_inserted_course);
-		  $user = $this->ouidm_get_user_id($username);
-                if (!unenrol_student($user->id, $course->id)) $error = true;
+                if (!unenrol_student($this->ouidm_get_user_id($username)->id, $this->ouidm_get_courseid($my_deleted_course))) $error = true;
             }
         }
         
         if ($inserted_courses = array_diff($courseids_idm, $courseids_moodle)) {
             foreach ($inserted_courses as $my_inserted_course){
                 if ($my_inserted_course == 'manual') continue;
-		  $course = $this->ouidm_get_course($my_inserted_course);
-		  $user = $this->ouidm_get_user_id($username);
-
-                if (!enrol_into_course($course, $user, 'ouidm')) $error = true;
+                if (!enrol_into_course($this->ouidm_get_user_id($username)->id, $this->ouidm_get_courseid($my_inserted_course))) $error = true;
             }
         }
-
         
         oci_free_statement($stid);
         return (!$error);
@@ -579,15 +563,16 @@ class auth_plugin_ouidm extends auth_plugin_base {
      **/
     function ouidm_update_user($username, $conn){
 
-         global $CFG; 
-
+         global $CFG;
+        
         $str_username = "'$username'";
         $table_name = $this->config->table; 
         
         $sql = 'SELECT IDENTIFIKATIE, VOL_NAAM, VOORLETTERS, W_PLAATS,
                              E_MAIL_ADRES, LAST_CHANGE, KR_CODE, OL_CODE FROM '. $table_name .' WHERE IDENTIFIKATIE = '.$str_username;  
+        
         $stid = oci_parse($conn, $sql);
-        oci_execute($stid);
+        oci_execute($stid);         
 
         while ($myuser_idm = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)){
             $firstname   = $myuser_idm['VOORLETTERS'];
@@ -595,7 +580,7 @@ class auth_plugin_ouidm extends auth_plugin_base {
             $city        = $myuser_idm['W_PLAATS'];
             $email       = $myuser_idm['E_MAIL_ADRES'];
             $last_change = date('dYG', strtotime($myuser_idm['LAST_CHANGE']));
-        }
+        }       
 
         $myuser_moodle = $this->ouidm_get_user_id($username);
         
@@ -639,13 +624,15 @@ class auth_plugin_ouidm extends auth_plugin_base {
      * @params: $idnumber of a course
      * @return: mixted courseid or false if the course does not exist.
      **/
-    function ouidm_get_course($idnumber){
+    function ouidm_get_courseid($idnumber){
         global $CFG;        
         
-        // $sql_course = "select * from {$CFG->prefix}course where idnumber = '{$idnumber}'";
-	 $course = get_record('course', 'idnumber', $idnumber);
+        $sql_course = "select id, idnumber from {$CFG->prefix}course where idnumber = ".$idnumber;
+         
+        $courseid = get_record_sql($sql_course);        
         
-        return $course;
+        return $courseid->id;
+        
     }    
     
     
